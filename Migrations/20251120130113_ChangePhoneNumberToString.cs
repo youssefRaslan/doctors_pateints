@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace doctors.Migrations
 {
     /// <inheritdoc />
-    public partial class docpatients : Migration
+    public partial class ChangePhoneNumberToString : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -58,10 +58,12 @@ namespace doctors.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     Specialty = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    PhoneNumber = table.Column<int>(type: "int", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(11)", maxLength: 11, nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Image = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    Address = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true)
+                    Address = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: true),
+                    VerificationCode = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsEmailVerified = table.Column<bool>(type: "bit", nullable: false)
                 },
                 constraints: table =>
                 {

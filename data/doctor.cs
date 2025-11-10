@@ -13,15 +13,21 @@ namespace doctors.data
         [MaxLength(20)]
         [MinLength(3)]
         public string Specialty { get; set; }
-        [Required(ErrorMessage = "u have add a phone")]
-        [MinLength(11)]
-        public int PhoneNumber { get; set; }
+   
+        [Required]
+        [MaxLength(11)]
+        public string PhoneNumber { get; set; }
+
+
         [Required(ErrorMessage = " u have to add email")]
         [EmailAddress]
         public string Email { get; set; }
         public string? Image { get; set; }
         [MaxLength(20)]
         public string? Address { get; set; }
+        public string? VerificationCode { get; set; }
+
+        public bool IsEmailVerified { get; set; } = false;
         public ICollection<PatientDoctor> PatientDoctors { get; set; }
 
     }

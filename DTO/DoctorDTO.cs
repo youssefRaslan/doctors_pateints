@@ -11,7 +11,7 @@ namespace doctors.DTO
         public string name { get; set; }
         public string specialization { get; set; }
         public string Email { get; set; }
-        public int PhoneNumber { get; set; }
+        public string PhoneNumber { get; set; }
 
 
     }
@@ -25,11 +25,11 @@ namespace doctors.DTO
         [Required]
         public string Email { get; set; }
         [Required]
-  
-        [Range(0100000000, 0199999999)]
-        public int PhoneNumber { get; set; }
+   
+        [RegularExpression(@"^01[0-2,5][0-9]{8}$", ErrorMessage = "Invalid Egyptian phone number")]
+        public string PhoneNumber { get; set; }
         public string? Address { get; set; }
-        public IFormFile ImageFile { get; set; }
+        public IFormFile? ImageFile { get; set; }
 
 
 
@@ -39,8 +39,10 @@ namespace doctors.DTO
     {
         public int id { get; set; }
         public string name { get; set; }
+        public string email { get; set; }   
+        public string message { get; set; }
 
-   
+
 
     }
     public class getgmailDoctorDTO
@@ -57,6 +59,7 @@ namespace doctors.DTO
 
         public int id { get; set; }
         public string name { get; set; }
+        public string ImageFile { get; set; }
 
 
     }

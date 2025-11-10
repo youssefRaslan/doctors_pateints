@@ -3,18 +3,21 @@ using doctors.DTO;
 using doctors.services.interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.EntityFrameworkCore;
-
+using System.Net;
+using System.Net.Mail;
 namespace doctors.services.impelemtion
 {
     public class DoctorService : IDoctorService
     {
         private readonly AppDbContext _context;
         private readonly Icloudinarycs _cloudinaryService;
-        public DoctorService(AppDbContext context, Icloudinarycs cloudinaryService)
+        private readonly IEmail _emailService;
+        public DoctorService(AppDbContext context, Icloudinarycs cloudinaryService, IEmail emailService)
         {
-           
+
             _context = context;
             _cloudinaryService = cloudinaryService;
+            _emailService = emailService;
         }
         public async Task<reqstgmailDoctorDTO> Getgmail(getgmailDoctorDTO getgmail)
         {
@@ -28,7 +31,8 @@ namespace doctors.services.impelemtion
             return new reqstgmailDoctorDTO
             {
                 id = doctor.Id,
-                name = doctor.Name
+                name = doctor.Name,
+                ImageFile = doctor.Image
             };
         }
 
@@ -48,29 +52,63 @@ namespace doctors.services.impelemtion
 
             return doctors;
         }
-        public async Task<requstDoctorDTO> Add(AddDoctorDTO doctor)
+        public async Task<requstDoctorDTO> Add(AddDoctorDTO doctor1)
         {
-            if (doctor.ImageFile == null)
+           
+            var gmailExists = await _context.doctors.AnyAsync(d => d.Email == doctor1.Email);
+            if (gmailExists)
+            {
                 return null;
-            // FIX: Use the instance 'doctor.ImageFile' instead of 'AddDoctorDTO.ImageFile'
-            var uploadResult = await _cloudinaryService.UploadImageAsync(doctor.ImageFile);
-            string imageUrl = uploadResult?.Url; // Assuming UploadImageResult has a Url property
+            }
+
+            
+            string verificationCode = new Random().Next(100000, 999999).ToString();
+
+            
+            string imageUrl = null;
+            if (doctor1.ImageFile != null && doctor1.ImageFile.Length > 0)
+            {
+                var uploadResult = await _cloudinaryService.UploadImageAsync(doctor1.ImageFile);
+                imageUrl = uploadResult.Url;
+            }
+
+           
             var newDoctor = new doctor
             {
-                Name = doctor.name,
-                Specialty = doctor.specialization,
-                Email = doctor.Email,
-                PhoneNumber = doctor.PhoneNumber,
-                Address = doctor.Address,
-                Image = imageUrl
+                Name = doctor1.name,
+                Specialty = doctor1.specialization,
+                Email = doctor1.Email,
+                PhoneNumber = doctor1.PhoneNumber,
+                Address = doctor1.Address,
+                Image = imageUrl,
+                VerificationCode = verificationCode, 
+                IsEmailVerified = false 
             };
+
             _context.doctors.Add(newDoctor);
             await _context.SaveChangesAsync();
+
+        
+            await _emailService.SendEmailAsync(doctor1.Email, verificationCode);
+
             return new requstDoctorDTO
             {
                 id = newDoctor.Id,
                 name = newDoctor.Name,
+                email = newDoctor.Email,
+                message = "Verification code sent to your email"
             };
+        }
+        public async Task<bool> VerifyEmail(string email, string code)
+        {
+            var doctor = await _context.doctors.FirstOrDefaultAsync(d => d.Email == email);
+            if (doctor == null) return false;
+            if (doctor.VerificationCode != code) return false;
+
+            doctor.IsEmailVerified = true;
+            doctor.VerificationCode = null;
+            await _context.SaveChangesAsync();
+            return true;
         }
 
         public async Task <removeDoctorDTO> Remove(getgmailDoctorDTO removeDOC)

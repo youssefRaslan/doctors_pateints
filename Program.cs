@@ -1,10 +1,11 @@
 
+using CloudinaryDotNet;
 using doctors.data;
 using doctors.services.impelemtion;
 using doctors.services.interfaces;
-using Microsoft.EntityFrameworkCore;
-using CloudinaryDotNet;
 using dotenv.net;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace doctors
 {
@@ -15,16 +16,33 @@ namespace doctors
             var builder = WebApplication.CreateBuilder(args);
             builder.Services.AddScoped<IDoctorService, DoctorService>();
 
-
             builder.Services.AddDbContext<AppDbContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("cs")));
+     options.UseSqlServer(builder.Configuration.GetConnectionString("cs")));
+
+
             // ????? ?????????
             DotEnv.Load(options: new DotEnvOptions(probeForEnv: true));
 
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddScoped<Icloudinarycs, CloudinaryService>();
+            builder.Services.AddScoped<IEmail,Emailservis>();
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddIdentity<User, IdentityRole>()
+       .AddEntityFrameworkStores<AppDbContext>();
 
 
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("MyPolicy", policy =>
+                {
+                    policy.AllowAnyOrigin()
+                    .AllowAnyMethod()
+                    .AllowAnyHeader();
+                });
+
+
+
+            });
 
             builder.Services.AddControllers();
 
@@ -33,6 +51,8 @@ namespace doctors
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SupportNonNullableReferenceTypes();
+
+
             });
 
 
@@ -46,7 +66,8 @@ namespace doctors
                 app.UseSwaggerUI();
 
             }
-      
+            app.UseCors("MyPolicy");
+
 
             app.UseHttpsRedirection();
 
