@@ -22,6 +22,9 @@ namespace doctors.data
         public string? Image { get; set; }
         [MaxLength(20)]
         public string? Address { get; set; }
+        public string? VerificationCode { get; set; }
+
+        public bool IsEmailVerified { get; set; } = false;
         public ICollection<PatientDoctor> PatientDoctors { get; set; }
 
     }

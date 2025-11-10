@@ -23,6 +23,8 @@ namespace doctors
 
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddScoped<Icloudinarycs, CloudinaryService>();
+            builder.Services.AddScoped<IEmail,Emailservis>();
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
 
 
 
