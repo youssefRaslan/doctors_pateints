@@ -59,4 +59,47 @@ public class CloudinaryService : Icloudinarycs
         var result = await _cloudinary.DestroyAsync(deleteParams);
         return result.Result == "ok";
     }
+
+    public async Task<UploadImageResult> UploadFileAsync(IFormFile file)
+    {
+        if (file == null || file.Length == 0)
+            return null;
+
+        var allowedTypes = new[] { "image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf" };
+        if (!allowedTypes.Contains(file.ContentType.ToLower()))
+            throw new Exception("Only image and PDF files are allowed.");
+
+        RawUploadResult uploadResult;
+        using var stream = file.OpenReadStream();
+
+        if (file.ContentType.ToLower() == "application/pdf")
+        {
+            var uploadParams = new RawUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = "doctors/files"
+            };
+            uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        }
+        else
+        {
+            var uploadParams = new ImageUploadParams
+            {
+                File = new FileDescription(file.FileName, stream),
+                Folder = "doctors/files"
+            };
+            uploadResult = await _cloudinary.UploadAsync(uploadParams);
+        }
+
+        if (uploadResult.StatusCode == System.Net.HttpStatusCode.OK && uploadResult.SecureUrl != null)
+        {
+            return new UploadImageResult
+            {
+                Url = uploadResult.SecureUrl.ToString(),
+                PublicId = uploadResult.PublicId
+            };
+        }
+
+        throw new Exception(uploadResult.Error?.Message ?? "Failed to upload file.");
+    }
 }

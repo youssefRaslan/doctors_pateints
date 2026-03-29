@@ -10,7 +10,7 @@ namespace doctors.services.impelemtion
         public async Task SendEmailAsync(string email, string verificationCode)
         {
             var fromEmail = "youssefraslan00000@gmail.com";
-            var password = "mynemwodkpjoxuqm";
+            var password = "faly puoo kxst mgzr";
 
             var msg = new MailMessage();
             msg.IsBodyHtml = true;
@@ -26,6 +26,7 @@ namespace doctors.services.impelemtion
             using var smtpClient = new SmtpClient("smtp.gmail.com", 587)
             {
                 EnableSsl = true,
+                UseDefaultCredentials = false,
                 Credentials = new NetworkCredential(fromEmail, password),
                 DeliveryMethod = SmtpDeliveryMethod.Network
             };

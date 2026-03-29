@@ -27,6 +27,9 @@ namespace doctors.data
         public string? Address { get; set; }
         public string? VerificationCode { get; set; }
 
+        public string PasswordHash { get; set; } = string.Empty;
+        public string Role { get; set; } = "Doctor";
+
         public bool IsEmailVerified { get; set; } = false;
         public ICollection<PatientDoctor> PatientDoctors { get; set; }
 

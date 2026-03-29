@@ -57,5 +57,22 @@ namespace doctors.controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
             }
         }
+
+        [HttpPost("uploadfile")]
+        [Consumes("multipart/form-data")]
+        public async Task<ActionResult<UploadImageResult>> UploadFile([FromForm] UploadImageDto dto)
+        {
+            if (dto.File == null || dto.File.Length == 0)
+                return BadRequest("No file selected.");
+            try
+            {
+                var fileUrl = await _cloudinaryService.UploadFileAsync(dto.File);
+                return Ok(new { Url = fileUrl });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { Message = ex.Message });
+            }
+        }
     }
 }

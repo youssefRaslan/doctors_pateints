@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  min-height: 100dvh;
+}
+
+.boot-banner {
+  position: fixed;
+  top: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  background: #0d7a87;
+  color: #fff;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font: 600 0.82rem/1.2 'Manrope', sans-serif;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}

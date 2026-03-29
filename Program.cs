@@ -1,4 +1,3 @@
-
 using CloudinaryDotNet;
 using doctors.data;
 using doctors.services.impelemtion;
@@ -6,6 +5,10 @@ using doctors.services.interfaces;
 using dotenv.net;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using doctors.Middlewares;
 
 namespace doctors
 {
@@ -25,8 +28,13 @@ namespace doctors
 
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddScoped<Icloudinarycs, CloudinaryService>();
-            builder.Services.AddScoped<IEmail,Emailservis>();
-            builder.Services.AddScoped<IDoctorService, DoctorService>();
+            builder.Services.AddScoped<IEmail, Emailservis>();
+            builder.Services.AddScoped<IDoctorPatientService, DoctorPatientService>();
+            builder.Services.AddScoped<IAuthService, doctors.services.implementation.AuthService>();
+            builder.Services.AddScoped<IpatientService, PatientService>();
+            builder.Services.AddScoped<IChatService, ChatService>();
+            builder.Services.AddScoped<IMeasurementService, MeasurementService>();
+            // builder.Services.AddScoped<IDoctorService, DoctorService>();
             builder.Services.AddIdentity<User, IdentityRole>()
        .AddEntityFrameworkStores<AppDbContext>();
 
@@ -46,8 +54,30 @@ namespace doctors
 
             builder.Services.AddControllers();
 
+            var keyStr = builder.Configuration["Jwt:Key"] ?? "a_very_long_super_secret_key_which_is_secure_1234567890";
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(options =>
+            {
+                options.RequireHttpsMetadata = false;
+                options.SaveToken = true;
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "DoctorsApp",
+                    ValidAudience = builder.Configuration["Jwt:Audience"] ?? "DoctorsApp",
+                    IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(keyStr))
+                };
+            });
+
             builder.Services.AddEndpointsApiExplorer();
-            
+
             builder.Services.AddSwaggerGen(c =>
             {
                 c.SupportNonNullableReferenceTypes();
@@ -58,7 +88,7 @@ namespace doctors
 
             var app = builder.Build();
 
-
+            app.UseMiddleware<GlobalExceptionMiddleware>();
 
             if (app.Environment.IsDevelopment())
             {
@@ -71,12 +101,14 @@ namespace doctors
 
             app.UseHttpsRedirection();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
             app.MapControllers();
 
             app.Run();
+            
         }
     }
 }

@@ -52,51 +52,39 @@ namespace doctors.services.impelemtion
 
             return doctors;
         }
-        public async Task<requstDoctorDTO> Add(AddDoctorDTO doctor1)
+        
+        public async Task<requstDoctorDTO> Add(AddDoctorDTO doctor)
         {
-           
-            var gmailExists = await _context.doctors.AnyAsync(d => d.Email == doctor1.Email);
-            if (gmailExists)
+            var existingDoctor = await _context.doctors.FirstOrDefaultAsync(d => d.Email == doctor.Email);
+            if (existingDoctor != null)
             {
                 return null;
-            }
-
-            
-            string verificationCode = new Random().Next(100000, 999999).ToString();
-
-            
-            string imageUrl = null;
-            if (doctor1.ImageFile != null && doctor1.ImageFile.Length > 0)
-            {
-                var uploadResult = await _cloudinaryService.UploadImageAsync(doctor1.ImageFile);
-                imageUrl = uploadResult.Url;
-            }
-
-           
+            } 
             var newDoctor = new doctor
             {
-                Name = doctor1.name,
-                Specialty = doctor1.specialization,
-                Email = doctor1.Email,
-                PhoneNumber = doctor1.PhoneNumber,
-                Address = doctor1.Address,
-                Image = imageUrl,
-                VerificationCode = verificationCode, 
-                IsEmailVerified = false 
+                Name = doctor.name,
+                Specialty = doctor.specialization,
+                Email = doctor.Email,
+                PhoneNumber = doctor.PhoneNumber,
+                Address = doctor.Address
             };
-
+            if (doctor.ImageFile != null)
+            {
+                var imageUrl = await _cloudinaryService.UploadImageAsync(doctor.ImageFile);
+                newDoctor.Image = imageUrl.Url;
+            }
+            newDoctor.VerificationCode = Guid.NewGuid().ToString().Substring(0, 6).ToUpper();
             _context.doctors.Add(newDoctor);
             await _context.SaveChangesAsync();
-
-        
-            await _emailService.SendEmailAsync(doctor1.Email, verificationCode);
+            await _emailService.SendEmailAsync(newDoctor.Email,
+                 $"Email Verification - Your verification code is: {newDoctor.VerificationCode}");
 
             return new requstDoctorDTO
             {
                 id = newDoctor.Id,
                 name = newDoctor.Name,
                 email = newDoctor.Email,
-                message = "Verification code sent to your email"
+                message = "Registration successful! Please check your email for the verification code."
             };
         }
         public async Task<bool> VerifyEmail(string email, string code)

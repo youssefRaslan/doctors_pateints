@@ -1,14 +1,14 @@
-﻿using doctors.data;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using doctors.DTO;
 
 namespace doctors.services.interfaces
 {
     public interface IpatientService
     {
-        Patient? GetById(int id);
-        List<Patient> GetAll();
-        void Add(Patient doctor);
-        void Remove(int id);
-        void Update(Patient doctor);
-
+        Task<PatientDetailsDTO?> GetByIdAsync(int id);
+        Task<IEnumerable<PatientDetailsDTO>> GetAllAsync(int page, int pageSize);
+        Task<bool> UpdateAsync(int id, UpdatePatientDTO updateDto);
+        Task<bool> RemoveAsync(int id);
     }
 }

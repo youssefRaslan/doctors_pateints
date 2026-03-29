@@ -120,7 +120,7 @@ namespace doctors.Controllers
             return Ok(resuit);
         }
 
-
+        // create a method to calculate age from birthdate
 
     }
 }

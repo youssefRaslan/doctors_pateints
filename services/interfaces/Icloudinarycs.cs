@@ -5,6 +5,7 @@ namespace doctors.services.interfaces
     public interface Icloudinarycs
     {
         Task<UploadImageResult> UploadImageAsync(IFormFile file);
+        Task<UploadImageResult> UploadFileAsync(IFormFile file);
         Task<bool> DeleteImageAsync(string publicId);
     }
 }

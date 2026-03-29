@@ -1,0 +1,110 @@
+<main class="login-shell">
+  <section class="brand-panel">
+    <p class="eyebrow">Patient-Doctor Platform</p>
+    <h1>Clinical Operations Control Center</h1>
+    <p class="subtitle">
+      Sign in to review doctors, patients, measurements, and communication threads in one dashboard.
+    </p>
+    <ul>
+      <li>Live API integration with your .NET backend</li>
+      <li>JWT-based secure route access</li>
+      <li>Responsive interface for desktop and mobile</li>
+    </ul>
+  </section>
+
+  <section class="form-panel">
+    <h2>Welcome Back</h2>
+    <p>Use your doctor or patient account to continue.</p>
+
+    <div class="toggle-group">
+      <button
+        type="button"
+        class="toggle"
+        [class.active]="selectedRole === 'doctor'"
+        (click)="setRole('doctor')"
+      >
+        Doctor
+      </button>
+      <button
+        type="button"
+        class="toggle"
+        [class.active]="selectedRole === 'patient'"
+        (click)="setRole('patient')"
+      >
+        Patient
+      </button>
+    </div>
+
+    <div class="toggle-group mode-group">
+      <button
+        type="button"
+        class="toggle"
+        [class.active]="selectedMode === 'login'"
+        (click)="setMode('login')"
+      >
+        Login
+      </button>
+      <button
+        type="button"
+        class="toggle"
+        [class.active]="selectedMode === 'register'"
+        (click)="setMode('register')"
+      >
+        Register
+      </button>
+    </div>
+
+    <form [formGroup]="authForm" (ngSubmit)="submit()">
+      @if (selectedMode === 'register') {
+        <label for="name">Name</label>
+        <input id="name" type="text" formControlName="name" placeholder="Full name" />
+        @if (authForm.controls.name.invalid && authForm.controls.name.touched) {
+          <small class="error">Name is required and should be at least 3 characters.</small>
+        }
+
+        <label for="phone">Phone Number</label>
+        <input id="phone" type="text" formControlName="phone" placeholder="01xxxxxxxxx" />
+        @if (authForm.controls.phone.invalid && authForm.controls.phone.touched) {
+          <small class="error">Phone number is required.</small>
+        }
+      }
+
+      <label for="email">Email</label>
+      <input id="email" type="email" formControlName="email" placeholder="name@example.com" />
+      @if (authForm.controls.email.invalid && authForm.controls.email.touched) {
+        <small class="error">Please enter a valid email address.</small>
+      }
+
+      <label for="password">Password</label>
+      <input id="password" type="password" formControlName="password" placeholder="At least 6 characters" />
+      @if (authForm.controls.password.invalid && authForm.controls.password.touched) {
+        <small class="error">Password must be at least 6 characters.</small>
+      }
+
+      @if (selectedMode === 'register') {
+        <label for="photo">Photo (optional)</label>
+        <input id="photo" type="file" accept="image/*" (change)="onPhotoSelected($event)" />
+      }
+
+      @if (errorMessage) {
+        <div class="alert">{{ errorMessage }}</div>
+      }
+
+      @if (successMessage) {
+        <div class="success">{{ successMessage }}</div>
+      }
+
+      <button type="submit" [disabled]="isSubmitting">
+        {{
+          isSubmitting
+            ? selectedMode === 'login'
+              ? 'Signing in...'
+              : 'Creating account...'
+            : selectedMode === 'login'
+              ? 'Sign in'
+              : 'Create account'
+        }}
+      </button>
+    </form>
+  </section>
+</main>
