@@ -28,6 +28,7 @@ namespace doctors
 
             builder.Services.Configure<CloudinarySettings>(builder.Configuration.GetSection("CloudinarySettings"));
             builder.Services.AddScoped<Icloudinarycs, CloudinaryService>();
+<<<<<<< HEAD
             builder.Services.AddScoped<IEmail, Emailservis>();
             builder.Services.AddScoped<IDoctorPatientService, DoctorPatientService>();
             builder.Services.AddScoped<IAuthService, doctors.services.implementation.AuthService>();
@@ -37,6 +38,10 @@ namespace doctors
             // builder.Services.AddScoped<IDoctorService, DoctorService>();
             builder.Services.AddIdentity<User, IdentityRole>()
        .AddEntityFrameworkStores<AppDbContext>();
+=======
+            builder.Services.AddScoped<IEmail,Emailservis>();
+            builder.Services.AddScoped<IDoctorService, DoctorService>();
+>>>>>>> ac09d612b98d7ffab041ed4ae440eff7cb744df1
 
 
             builder.Services.AddCors(options =>

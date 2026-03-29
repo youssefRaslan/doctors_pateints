@@ -8,7 +8,7 @@ The project also supports **image upload** using **Cloudinary**.
 ---
 
 ## ⚙️ Tech Stack
-- **Backend:** ASP.NET Core Web API (.NET 8)
+- **Backend:** ASP.NET Core Web API (.NET 9)
 - **Database:** Microsoft SQL Server
 - **ORM:** Entity Framework Core
 - **Image Hosting:** Cloudinary

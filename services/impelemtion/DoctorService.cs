@@ -52,6 +52,7 @@ namespace doctors.services.impelemtion
 
             return doctors;
         }
+<<<<<<< HEAD
         
         public async Task<requstDoctorDTO> Add(AddDoctorDTO doctor)
         {
@@ -78,13 +79,57 @@ namespace doctors.services.impelemtion
             await _context.SaveChangesAsync();
             await _emailService.SendEmailAsync(newDoctor.Email,
                  $"Email Verification - Your verification code is: {newDoctor.VerificationCode}");
+=======
+        public async Task<requstDoctorDTO> Add(AddDoctorDTO doctor1)
+        {
+           
+            var gmailExists = await _context.doctors.AnyAsync(d => d.Email == doctor1.Email);
+            if (gmailExists)
+            {
+                return null;
+            }
+
+            
+            string verificationCode = new Random().Next(100000, 999999).ToString();
+
+            
+            string imageUrl = null;
+            if (doctor1.ImageFile != null && doctor1.ImageFile.Length > 0)
+            {
+                var uploadResult = await _cloudinaryService.UploadImageAsync(doctor1.ImageFile);
+                imageUrl = uploadResult.Url;
+            }
+
+           
+            var newDoctor = new doctor
+            {
+                Name = doctor1.name,
+                Specialty = doctor1.specialization,
+                Email = doctor1.Email,
+                PhoneNumber = doctor1.PhoneNumber,
+                Address = doctor1.Address,
+                Image = imageUrl,
+                VerificationCode = verificationCode, 
+                IsEmailVerified = false 
+            };
+
+            _context.doctors.Add(newDoctor);
+            await _context.SaveChangesAsync();
+
+        
+            await _emailService.SendEmailAsync(doctor1.Email, verificationCode);
+>>>>>>> ac09d612b98d7ffab041ed4ae440eff7cb744df1
 
             return new requstDoctorDTO
             {
                 id = newDoctor.Id,
                 name = newDoctor.Name,
                 email = newDoctor.Email,
+<<<<<<< HEAD
                 message = "Registration successful! Please check your email for the verification code."
+=======
+                message = "Verification code sent to your email"
+>>>>>>> ac09d612b98d7ffab041ed4ae440eff7cb744df1
             };
         }
         public async Task<bool> VerifyEmail(string email, string code)
