@@ -11,9 +11,9 @@ namespace doctors.services.impelemtion
         {
             var fromEmail = "youssefraslan00000@gmail.com";
 <<<<<<< HEAD
-            var password = "faly puoo kxst mgzr";
+            var password = "";
 =======
-            var password = "mynemwodkpjoxuqm";
+           
 >>>>>>> ac09d612b98d7ffab041ed4ae440eff7cb744df1
 
             var msg = new MailMessage();
